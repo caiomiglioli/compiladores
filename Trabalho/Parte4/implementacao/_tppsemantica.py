@@ -469,6 +469,7 @@ def getScope(line, table):
 #podar arvore
 
 def podarArvore(tree):
+  #PODAR ATRIBUICAO
   for node in PreOrderIter(tree):
     if node.type == 'ATRIBUICAO' and node.name == 'atribuicao':
       atrPai = node.parent
@@ -495,6 +496,7 @@ def podarArvore(tree):
       atrExpressao.parent = atrSimbolo
       
   ##############################################
+  #PODAR EXPRESSOES ARITMETICAS
   cabacagemFlag = True
   while(cabacagemFlag):
     cabacagemFlag = False
@@ -527,6 +529,7 @@ def podarArvore(tree):
   #endwhile
   
   ##############################################
+  #REMOVE O NÓ E TODOS SEUS FILHOS
   remAux = ['ABRE_PARENTESE','FECHA_PARENTESE','FIM','DOIS_PONTOS', 'VIRGULA', 'ABRE_COLCHETE', 'FECHA_COLCHETE']
   for node in PreOrderIter(tree):
     remove = False
@@ -535,7 +538,7 @@ def podarArvore(tree):
       remove = True
     elif node.name == 'corpo' and node.children[0].name == 'vazio':
       remove = True
-    elif node.name in ['ESCREVA', 'RETORNA', 'LEIA', 'SE', 'ENTAO', 'SENAO']:
+    elif node.name in ['ESCREVA', 'RETORNA', 'LEIA', 'SE', 'ENTAO', 'SENAO', 'ATE', 'REPITA']:
       remove = True
 
     if remove:
@@ -543,7 +546,8 @@ def podarArvore(tree):
       node.parent = None
 
   ##############################################
-  remAux = ['VALOR', 'ID', 'INTEIRO', 'FLUTUANTE', 'SIMBOLO', 'VAR', 'CHAMADA_FUNCAO']
+  #REMOVE UM NÓ SEM TIRAR OS FILHOS DA ARVORE
+  remAux = ['VALOR', 'ID', 'INTEIRO', 'FLUTUANTE', 'SIMBOLO', 'VAR', 'CHAMADA_FUNCAO', 'EXPRESSAO_UNARIA'] #'ACAO', 'DECLARACAO'
   goodParents = ['escreva', 'leia', 'retorna', 'corpo']
   cabacagemFlag = True
   while(cabacagemFlag):
@@ -575,13 +579,13 @@ def podarArvore(tree):
 #########################################
 #########################################
 
-def main():
+def main(file):
+    if file:
+        argv[1] = file
+
     aux = argv[1].split('.')
     if aux[-1] != 'tpp':
       raise IOError("Not a .tpp file!")
-    
-    data = open(argv[1])
-    source_file = data.read()
 
     tree = _tppparser.main(argv[1])
     # print(RenderTree(root, style=AsciiStyle()).by_attr())
@@ -613,17 +617,18 @@ def main():
 
       p = podarArvore(tree)
       UniqueDotExporter(p).to_picture(argv[1] + ".unique.ast.poda.png")
-      #return tree, func, var
       
-      ##############################
-      ## print tabelas atualizadas:
-      print('\n\nfuncs:')
-      for f in functions:
-        print(f)
+      # ##############################
+      # ## print tabelas atualizadas:
+      # print('\n\nfuncs:')
+      # for f in functions:
+      #   print(f)
 
-      print('vars:')
-      for i in variables:
-        print(i)
+      # print('vars:')
+      # for i in variables:
+      #   print(i)
+      
+      return tree, functions, variables
 #end main()
 
 if __name__ == "__main__":

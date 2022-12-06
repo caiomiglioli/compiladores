@@ -2,7 +2,7 @@ inteiro: a[10]
 inteiro: b
 
 inteiro func1(inteiro:x, inteiro:y)
-  inteiro: res[x]
+  inteiro: res
   se (x <> y) então
     res := x + y
   senão
